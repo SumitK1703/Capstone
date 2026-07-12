@@ -1,0 +1,9 @@
+com\ecom\Models\Admin.class
+com\ecom\Models\Inventory.class
+com\ecom\Models\Product.class
+com\ecom\Models\Order.class
+com\ecom\Models\Customer.class
+com\ecom\Models\Seller.class
+com\ecom\Main.class
+com\ecom\Models\User.class
+com\ecom\Models\Cart.class
