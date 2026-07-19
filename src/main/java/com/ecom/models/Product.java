@@ -1,76 +1,89 @@
 package com.ecom.models;
-public class Product{
-    private static int currentProductId=100;
+
+public class Product {
+    private static int currentProductId = 100;
+    private final int productId;
     private String productName;
     private String category;
     private double price;
     private int quantity;
     private Seller seller;
-    private final int productId;
-    public Product(String category, double price, int quantity, Seller seller, String productName){
+    public Product(String category, double price, int quantity, Seller seller, String productName) {
         if (price < 0) {
-            throw new IllegalArgumentException("Price cannot be negative.");
+            throw new IllegalArgumentException("Product construction failed: Price cannot be negative.");
         }
         if (quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative.");
+            throw new IllegalArgumentException("Product construction failed: Quantity cannot be negative.");
         }
-        this.category=category;
-        this.price=price;
-        this.quantity=quantity;
-        this.seller=seller;
-        productId=currentProductId;
-        currentProductId++;
-        this.productName=productName;
+        if (productName == null || productName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product construction failed: Product name cannot be null or empty.");
+        }
+
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.seller = seller;
+        this.productName = productName;
+        this.productId = currentProductId++;
     }
+
     public int getProductId() {
         return productId;
     }
-    public String getProductName() {return productName;}
+
+    public String getProductName() {
+        return productName;
+    }
 
     public void setProductName(String productName) {
-        if (productName == null) {
-            throw new IllegalArgumentException("Product Name cannot be null.");
+        if (productName == null || productName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product Name cannot be null or empty.");
         }
         this.productName = productName;
     }
 
-
     public double getPrice() {
         return price;
     }
-    public void setPrice(double price) {
+
+    public boolean setPrice(double price) {
         if (price < 0) {
-            throw new IllegalArgumentException("Price cannot be negative.");
+            return false;
         }
         this.price = price;
+        return true;
     }
-
 
     public int getQuantity() {
         return quantity;
     }
-    public void setQuantity(int quantity) {
+
+    public boolean setQuantity(int quantity) {
         if (quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative.");
+            return false;
         }
         this.quantity = quantity;
+        return true;
     }
-
 
     public String getCategory() {
         return category;
     }
-    public void setCategory(String category) {
-        if (category == null) {
-            throw new IllegalArgumentException("Category cannot be null.");
+
+    public boolean setCategory(String category) {
+        if (category == null || category.trim().isEmpty()) {
+            return false;
         }
         this.category = category;
+        return true;
     }
-    public void setSeller(Seller seller){
-        this.seller=seller;
-    }
+
     public Seller getSeller() {
         return seller;
+    }
+
+    public void setSeller(Seller seller) {
+        this.seller = seller;
     }
 
     @Override
@@ -80,6 +93,5 @@ public class Product{
                 "\nCategory: " + category +
                 "\nPrice: " + price +
                 "\nQuantity: " + quantity;
-
     }
 }

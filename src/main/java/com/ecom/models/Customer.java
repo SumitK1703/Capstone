@@ -1,71 +1,66 @@
 package com.ecom.models;
+
+import com.ecom.repository.Inventory;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
-public class Customer extends User{
-    private List<Order> orderHistory= new ArrayList<>();
-    private Cart cart =new Cart();
+public class Customer extends User {
+    private final List<Order> orderHistory = new ArrayList<>();
+    private final Cart cart = new Cart();
+
     public Customer(String name, String email, String password) {
         super(name, email, password);
     }
 
-    public void displayInventory(Inventory inventory){
-        inventory.viewInventory();
+    public boolean addToCart(int productId, int quantity, Inventory inventory) {
+        return cart.addToCart(productId, quantity, inventory);
     }
-    public void addToCart(int productId, int quantity, Inventory inventory){
-        cart.addToCart(productId,quantity,inventory);
-     }
-     public void removeFromCart(int productId, Inventory inventory){
-        cart.removeFromCart(productId, inventory);
-     }
-     public void viewCart(){
-        cart.viewCart();
-     }
 
-    public void confirmOrder(Inventory inventory){
+    public boolean removeFromCart(int productId, Inventory inventory) {
+        return cart.removeFromCart(productId, inventory);
+    }
 
-        if(cart.isEmpty()){
-            System.out.println("Cart is empty.");
-            return;
+    public Cart getCart() {
+        return cart;
+    }
+
+    public List<Order> getOrderHistory() {
+        return orderHistory;
+    }
+    public boolean confirmOrder(Inventory inventory) {
+        if (cart.isEmpty()) {
+            throw new IllegalStateException("Checkout failed: Your shopping cart is empty.");
         }
-        for (Map.Entry<Product, Integer> e : cart.getItems().entrySet()) {
-            Product currentProduct = e.getKey();
-            Integer quantity = e.getValue();
+
+        for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
+            Product currentProduct = entry.getKey();
+            Integer requestedQuantity = entry.getValue();
+
             Optional<Product> inventoryProduct = inventory.findProductById(currentProduct.getProductId());
-            if(inventoryProduct.isEmpty()){
-                System.out.println("PRODUCT DOES NOT EXIST");
-                return;
+
+            if (inventoryProduct.isEmpty()) {
+                throw new IllegalArgumentException("Checkout failed: Product '" + currentProduct.getProductName() + "' no longer exists in inventory.");
             }
-            if(quantity > inventoryProduct.get().getQuantity()){
-                System.out.println("Quantity exceeded, Product ID : " + currentProduct.getProductId());
-                return;
+
+            if (requestedQuantity > inventoryProduct.get().getQuantity()) {
+                throw new IllegalArgumentException("Checkout failed: Insufficient stock for '" + currentProduct.getProductName() +
+                        "'. Requested: " + requestedQuantity + ", Available: " + inventoryProduct.get().getQuantity());
             }
         }
 
-        for (Map.Entry<Product, Integer> e : cart.getItems().entrySet()) {
-            Product currentProduct = e.getKey();
-            Integer quantity = e.getValue();
+        for (Map.Entry<Product, Integer> entry : cart.getItems().entrySet()) {
+            Product currentProduct = entry.getKey();
+            Integer requestedQuantity = entry.getValue();
+
             Optional<Product> inventoryProduct = inventory.findProductById(currentProduct.getProductId());
-            if(inventoryProduct.isEmpty()) return;
-            inventoryProduct.get().setQuantity(
-                    inventoryProduct.get().getQuantity() - quantity
-            );
+            inventoryProduct.ifPresent(product -> product.setQuantity(product.getQuantity() - requestedQuantity));
         }
-
         Order newOrder = new Order(this, cart);
         orderHistory.add(newOrder);
-        System.out.println("Order placed successfully.");
-        System.out.println("Total Price : " + newOrder.getNetCost());
         cart.clearCart();
+
+        return true;
     }
-
-     public void viewOrderHistory(){
-         for (Order order : orderHistory) {
-             System.out.println(order);
-             System.out.println("_________________________________");
-         }
-     }
-
 }

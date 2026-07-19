@@ -1,17 +1,26 @@
 package com.ecom.models;
-public class Seller extends User{
+
+import com.ecom.repository.Inventory;
+
+public class Seller extends User {
+
     public Seller(String name, String email, String password) {
         super(name, email, password);
     }
-    public void addProduct(Product product, Inventory inventory) {
-        inventory.addProduct(product);
+
+    public boolean addProduct(Product product, Inventory inventory) {
+        return inventory.addProduct(product);
     }
 
-    public void deleteProduct(Product product, Inventory inventory) {
-        inventory.deleteProduct(product.getProductId());
+    public boolean deleteProduct(Product product, Inventory inventory) {
+        if (product == null) {
+            return false;
+        }
+        return inventory.deleteProduct(product.getProductId());
     }
 
-    public void updateProduct(int productId, String category, double price, int quantity, Seller seller, String productName, Inventory inventory) {
-        inventory.updateProduct(productId, category, price, quantity, seller, productName);
+    public boolean updateProduct(int productId, String category, double price, int quantity,
+                                 Seller seller, String productName, Inventory inventory) {
+        return inventory.updateProduct(productId, category, price, quantity, seller, productName);
     }
 }

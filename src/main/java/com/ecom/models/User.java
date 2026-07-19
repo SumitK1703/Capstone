@@ -26,29 +26,33 @@ public class User implements Authenticatable {
     public int getUserId() {
         return userId;
     }
-    public void login(String email, String password) {
+    public boolean login(String email, String password) {
         if(this.email.equals(email) && this.password.equals(password)) {
             loginStatus = true;
-            System.out.println("Login successful.");
+            return true;
         }
         else {
-            System.out.println("Invalid email or password.");
+            return false;
         }
     }
-    public void logout() {
+    public boolean logout() {
         loginStatus = false;
-        System.out.println("Logged out successfully.");
+//        System.out.println("Logged out successfully.");
+        return true;
     }
+
     void deleteAccount() {
         System.out.println("Account deletion requested.");
     }
-    public void updateProfile(String name, String email, String password){
+    public boolean updateProfile(String name, String email, String password){
 
         this.name = name;
         this.email = email;
         this.password = password;
-        System.out.println("Profile updated successfully.");
+//      System.out.println("Profile updated successfully.");
+        return true;
     }
+
     public String getName(){
         return name;
     }

@@ -1,7 +1,8 @@
 package com.ecom;
 
 import com.ecom.models.*;
-import com.ecom.factory.UserFactory;
+import com.ecom.repository.Inventory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

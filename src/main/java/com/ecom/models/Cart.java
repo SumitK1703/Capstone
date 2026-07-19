@@ -1,4 +1,6 @@
 package com.ecom.models;
+import com.ecom.repository.Inventory;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
@@ -6,7 +8,7 @@ import java.util.Optional;
 public class Cart{
     private Map<Product,Integer> cartList= new HashMap<>();
 
-    double getNetPrice(){
+    public double getNetPrice(){
         double netPrice =0;
         for (Map.Entry<Product, Integer> item : cartList.entrySet()) {
             Product product = item.getKey();
@@ -15,31 +17,29 @@ public class Cart{
         }
         return netPrice;
     }
-    public void addToCart(int productId, int quantity, Inventory inventory) {
+    public boolean addToCart(int productId, int quantity, Inventory inventory) {
         Optional<Product> currentProduct = inventory.findProductById(productId);
         if (currentProduct.isEmpty()) {
-            System.out.println("PRODUCT DOES NOT EXIST");
-            return;
+            return false;
         }
         Product product = currentProduct.get();
         if (quantity > product.getQuantity()) {
-            System.out.println("Insufficient Quantity");
-            return;
+            return false;
         }
         cartList.put(product, quantity);
+        return true;
     }
-    public void removeFromCart(int productId, Inventory inventory){
+    public boolean removeFromCart(int productId, Inventory inventory){
         Optional<Product> currentProduct =inventory.findProductById(productId);
         if(currentProduct.isEmpty()){
-            System.out.println("PRODUCT DOES NOT EXIST");
-            return;
+            return false;
         }
         cartList.remove(currentProduct.get());
+        return true;
     }
-    public void viewCart() {
+    public boolean viewCart() {
         if(cartList.isEmpty()){
-            System.out.println("Cart is empty.");
-            return;
+            return false;
         }
         for (Map.Entry<Product, Integer> e : cartList.entrySet()) {
             System.out.println(
@@ -49,6 +49,7 @@ public class Cart{
             );
         }
         System.out.println("Total Price: " + getNetPrice());
+        return true;
     }
     public boolean isEmpty(){
         return cartList.isEmpty();
